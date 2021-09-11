@@ -13,7 +13,7 @@ void dim_init(int n, int dim[1000][10][10], int page){
 
 int	mk_dim2(int row, int col, int n, int dim[1000][10][10], int *page){
 	int		dat;
-	int		i;
+	int		i, j;
 	int		err;
 	int		next_row, next_col;
 
@@ -23,21 +23,31 @@ int	mk_dim2(int row, int col, int n, int dim[1000][10][10], int *page){
 			if((i != col) && (dim[*page][row][i] == dat)) break;
 			if((i != row) && (dim[*page][i][col] == dat)) break;
 		}
-		if(i < n) continue; /* can not put degit */
+		if(i < n) continue; /* can not put digit */
 
 		/*----- recursive call for next colmun -----*/
 		dim[*page][row][col] = dat;
 		next_row = row;
 		next_col = col + 1;
 		if(next_col >= n) {next_row = row + 1; next_col = 0;}
-		if(next_row >= n) {
+		if(next_row >= n - 1) {
 			/*----- success to make page -----*/
-			++*page;
+			++(*page);
+			if(*page >= 900) return(1);
 //			*(dim + *page) = (int **)malloc(sizeof(int) * n * n);
 			dim_init(n, dim, *page);
+			for(i = 0; i < n; ++i){
+				for(j = 0; j < n; ++j) {
+					if((i == row) && (j == col)) break;
+					dim[*page][i][j] = dim[*page - 1][i][j];
+					}
+				if((i == row) && (j == col)) break;
+				}
 			return(0);
 			}
 		err = mk_dim2(next_row, next_col, n, dim, page);
+		dim[*page][row][col] = 0;
+
 	}
 	return(1);
 }
